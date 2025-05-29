@@ -1,0 +1,53 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+# 1. Вчитување на податоци
+df = pd.read_csv("stanovi.csv")
+print(df.describe())
+
+# 2. Scatter plot
+plt.scatter(df['Kvadratura'], df['Cena'], color='blue')
+plt.xlabel("Kvadratura (m²)")
+plt.ylabel("Cena (ilj. evra)")
+plt.title("Kvadratura vs Cena")
+plt.show()
+
+# 3. Едноставна линеарна регресија
+X = df[['Kvadratura']]
+Y = df['Cena']
+model = LinearRegression()
+model.fit(X, Y)
+
+# 4. Формула
+a = model.coef_[0]
+b = model.intercept_
+print(f"Formula: Cena = {a:.2f} * Kvadratura + {b:.2f}")
+
+# 5. Предвидувања
+for kv in [55, 75, 100]:
+    pred = model.predict([[kv]])
+    print(f"Predvidena cena za {kv}m²: {pred[0]:.2f} iljada evra")
+
+# 6. Точност
+r2 = r2_score(Y, model.predict(X))
+print(f"R² Score: {r2:.3f}")
+
+# 7. Повеќекратна регресија
+X_multi = df[['Kvadratura', 'Sobi', 'Sprat']]
+model_multi = LinearRegression()
+model_multi.fit(X_multi, Y)
+
+# 8. Предвидување со повеќе променливи
+new_data = [[80, 3, 2]]
+pred_multi = model_multi.predict(new_data)
+print(f"Predvidena cena (multi): {pred_multi[0]:.2f} iljada evra")
+
+# 9. Графички приказ
+plt.scatter(df['Kvadratura'], df['Cena'], color='green', label='Realni podatoci')
+plt.plot(df['Kvadratura'], model.predict(df[['Kvadratura']]), color='red', label='Linear Regression')
+plt.xlabel("Kvadratura")
+plt.ylabel("Cena")
+plt.legend()
+plt.show()
